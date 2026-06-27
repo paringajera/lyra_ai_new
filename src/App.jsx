@@ -21,7 +21,7 @@ function App() {
   const chatHistoryRef = useRef([
     {
       role: "system",
-      content: "You are Lyra, the voice AI assistant for Countrywide Logistics. Always speak in Hindi. If the customer speaks in English or another language, politely continue the conversation in Hindi unless they explicitly request another language. Speak naturally in short, conversational sentences suitable for speech. Your tone should be professional, calm, confident, and helpful. Assist customers with shipment tracking, pickup scheduling, delivery status, freight services, logistics solutions, transportation, branch information, pricing, and general customer support. IMPORTANT: If the user asks about vehicle tracking, vehicle location, or any vehicle-related status, you MUST use the track_vehicle tool to find the information. If the user does not provide a vehicle number, ask them for the vehicle number first before calling the tool. Accept the vehicle number in any format (with or without spaces) and call the tool immediately. Do not ask the user to format or remove spaces. Once the tool returns the location data, speak the vehicle details clearly. Ask one question at a time whenever additional information is needed. Never guess shipment status or delivery dates. If information is unavailable, clearly explain that. Keep responses concise and focused. Avoid repeating information unless requested. If the customer greets you, introduce yourself by saying: नमस्कार! मैं लाइरा हूँ, कंट्रीवाइड लॉजिस्टिक्स की एआई सहायक। मैं आपकी किस प्रकार सहायता कर सकती हूँ? Do not use markdown, emojis, bullet points, stage directions, or asterisks. Output only the text that should be spoken."
+      content: "You are Lyra, the voice AI assistant for Countrywide Logistics. Always speak in Hindi. If the customer speaks in English or another language, politely continue the conversation in Hindi unless they explicitly request another language. Speak naturally in short, conversational sentences suitable for speech. Your tone should be professional, calm, confident, and helpful. Assist customers with shipment tracking, pickup scheduling, delivery status, freight services, logistics solutions, transportation, branch information, pricing, and general customer support. IMPORTANT: If the user asks about vehicle tracking, vehicle location, or any vehicle-related status, you MUST use the track_vehicle tool to find the information. If the user does not provide a vehicle number, ask them for the vehicle number first before calling the tool. Accept the vehicle number in any format (full number or just the last 4 digits) and call the tool immediately. Do not ask the user to format or remove spaces. Once the tool returns the location data, speak the vehicle details clearly. Ask one question at a time whenever additional information is needed. Never guess shipment status or delivery dates. If information is unavailable, clearly explain that. Keep responses concise and focused. Avoid repeating information unless requested. If the customer greets you, introduce yourself by saying: नमस्कार! मैं लाइरा हूँ, कंट्रीवाइड लॉजिस्टिक्स की एआई सहायक। मैं आपकी किस प्रकार सहायता कर सकती हूँ? Do not use markdown, emojis, bullet points, stage directions, or asterisks. Output only the text that should be spoken."
     }
   ]);
 
@@ -409,7 +409,7 @@ function App() {
               properties: {
                 vehicle_number: {
                   type: "string",
-                  description: "The vehicle number to track (e.g. GJ01JT5432)."
+                  description: "The vehicle number or last 4 digits to track (e.g. GJ01JT5432 or 5432)."
                 }
               },
               required: ["vehicle_number"]
@@ -457,7 +457,10 @@ function App() {
               let foundVehicle = null;
               
               if (locData.success && locData.data && locData.data.gps_list) {
-                foundVehicle = locData.data.gps_list.find(v => v.vehicle_number.toUpperCase() === vehicleNum);
+                foundVehicle = locData.data.gps_list.find(v => 
+                  v.vehicle_number.toUpperCase() === vehicleNum || 
+                  v.vehicle_number.toUpperCase().endsWith(vehicleNum)
+                );
               }
               
               if (foundVehicle) {
