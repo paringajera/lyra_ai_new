@@ -1,0 +1,153 @@
+.hud-terminal-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 800px;
+  height: 120px;
+  background: rgba(4, 8, 20, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 225, 0.1);
+  border-top: 1px solid rgba(0, 255, 225, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 0 0 20px rgba(0, 255, 225, 0.1);
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.hud-terminal-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 20px;
+  height: 20px;
+  border-top: 3px solid #00ffe1;
+  border-left: 3px solid #00ffe1;
+  border-top-left-radius: 8px;
+  box-shadow: -2px -2px 10px rgba(0, 255, 225, 0.5);
+}
+
+.hud-terminal-container::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-bottom: 3px solid #00ffe1;
+  border-right: 3px solid #00ffe1;
+  border-bottom-right-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 255, 225, 0.5);
+}
+
+.hud-terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 255, 225, 0.1);
+  border-bottom: 1px solid rgba(0, 255, 225, 0.2);
+  color: #00ffe1;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.terminal-status-dots {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.terminal-status-dots span {
+  width: 6px;
+  height: 6px;
+  background: #00ffe1;
+  opacity: 0.5;
+}
+
+.terminal-status-dots span:nth-child(1) { animation: blink 1s infinite; }
+.terminal-status-dots span:nth-child(2) { animation: blink 1s infinite 0.3s; }
+.terminal-status-dots span:nth-child(3) { animation: blink 1s infinite 0.6s; }
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.hud-terminal-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  color: #a0fcfc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Custom scrollbar for terminal */
+.hud-terminal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.hud-terminal-body::-webkit-scrollbar-track {
+  background: rgba(0, 255, 225, 0.05);
+}
+.hud-terminal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 225, 0.3);
+}
+
+.terminal-prompt {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.prompt-arrow {
+  color: #00ffe1;
+  font-weight: bold;
+}
+
+.terminal-cursor {
+  color: #00ffe1;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Removed .sys-info-container specific border styling since it is now on .hud-terminal-container globally */
+.glow-text-cyan {
+  color: #00ffe1;
+  text-shadow: 0 0 10px rgba(0, 255, 225, 0.8), 0 0 20px rgba(0, 255, 225, 0.4);
+  font-family: 'Orbitron', 'Courier New', Courier, monospace;
+}
+
+.glow-text-cyan-dim {
+  color: #00ffe1;
+  text-shadow: 0 0 5px rgba(0, 255, 225, 0.5);
+}
+
+.sys-divider {
+  position: relative;
+  height: 1px;
+  background: rgba(0, 255, 225, 0.2);
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sys-divider::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #00ffe1;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px #00ffe1;
+}
