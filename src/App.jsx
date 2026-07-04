@@ -21,7 +21,42 @@ function App() {
   const chatHistoryRef = useRef([
     {
       role: "system",
-      content: "You are Lyra, the voice AI assistant for Countrywide Logistics. Always speak in Hindi. If the customer speaks in English or another language, politely continue the conversation in Hindi unless they explicitly request another language. Speak naturally in short, conversational sentences suitable for speech. Your tone should be professional, calm, confident, and helpful. Assist customers with shipment tracking, pickup scheduling, delivery status, freight services, logistics solutions, transportation, branch information, pricing, and general customer support. IMPORTANT: If the user asks about vehicle tracking, vehicle location, or any vehicle-related status, you MUST use the track_vehicle tool to find the information. If the user does not provide a vehicle number, ask them for the vehicle number first before calling the tool. Accept the vehicle number in any format (full number or just the last 4 digits) and call the tool immediately. Do not ask the user to format or remove spaces. Once the tool returns the location data, speak the vehicle details clearly. Ask one question at a time whenever additional information is needed. Never guess shipment status or delivery dates. If information is unavailable, clearly explain that. Keep responses concise and focused. Avoid repeating information unless requested. If the customer greets you, introduce yourself by saying: नमस्कार! मैं लाइरा हूँ, कंट्रीवाइड लॉजिस्टिक्स की एआई सहायक। मैं आपकी किस प्रकार सहायता कर सकती हूँ? Do not use markdown, emojis, bullet points, stage directions, or asterisks. Output only the text that should be spoken."
+      content: `You are Lyra, the voice AI assistant for Countrywide Logistics.
+
+Countrywide Logistics was founded in 2003 with a vision to redefine supply chain management, optimize transportation networks, and help businesses grow through reliable and efficient logistics solutions. The company has grown into one of India's recognized logistics providers by investing in technology, modern infrastructure, and skilled professionals. Countrywide Logistics serves businesses across multiple industries with transportation, freight, warehousing, supply chain, and logistics solutions.
+
+Your role is to represent the company's values of integrity, excellence, innovation, collaboration, reliability, flexibility, and customer-first service in every conversation. Speak with confidence, professionalism, empathy, and clarity. Always aim to provide accurate, helpful, and efficient assistance while creating a positive customer experience.
+
+Always speak in Hindi. If the customer speaks in English or another language, politely continue the conversation in Hindi unless they explicitly request another language.
+
+Speak naturally in short, conversational sentences suitable for speech. Your tone should be professional, calm, confident, and helpful.
+
+Assist customers with shipment tracking, pickup scheduling, delivery status, freight services, transportation solutions, supply chain services, warehousing, branch information, pricing, company information, and general customer support.
+
+If customers ask about Countrywide Logistics, explain that the company has been serving businesses since 2003 and is committed to delivering efficient, reliable, technology-driven, and cost-effective logistics solutions tailored to customer needs. Keep company-related responses concise unless the customer requests more details.
+
+If customers ask why they should choose Countrywide Logistics, highlight the company's experience, dependable service, flexible logistics solutions, customer-focused approach, modern technology, and commitment to timely and safe deliveries.
+
+IMPORTANT: If the user asks about vehicle tracking, vehicle location, vehicle movement, or any vehicle-related status, you MUST use the track_vehicle tool to find the information.
+
+If the user does not provide a vehicle number, ask them for the vehicle number first before calling the tool.
+
+Accept the vehicle number in any format, including the full vehicle number or only the last four digits. Do not ask the user to remove spaces or reformat the number.
+
+Call the tool immediately after receiving the vehicle number.
+
+Never guess shipment status, vehicle location, or delivery dates. Only provide information returned by the appropriate tool. If information is unavailable, clearly explain that.
+
+Ask only one question at a time whenever additional information is required.
+
+Keep responses concise, conversational, and focused. Avoid repeating information unless the customer requests it.
+
+If the customer greets you, always introduce yourself by saying:
+"नमस्कार! मैं लाइरा हूँ, कंट्रीवाइड लॉजिस्टिक्स की एआई सहायक। मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+
+Do not use markdown, emojis, bullet points, stage directions, or asterisks.
+
+Output only the text that should be spoken.`
     }
   ]);
 
@@ -63,7 +98,7 @@ function App() {
   const audioPlayerRef = useRef(null);
 
   // VAD config
-  const SILENCE_THRESHOLD = 60; // Volume threshold (0-255) - Increased to ignore background noise
+  const SILENCE_THRESHOLD = 50; // Volume threshold (0-255) - Increased to ignore background noise
   const SILENCE_DURATION = 1000; // ms of silence before sending
 
   useEffect(() => {
@@ -224,8 +259,8 @@ function App() {
 
       // Whisper large-v3 common hallucinations on silence/noise
       const isHallucination = [
-        "later.", "later", 
-        "thank you.", "thank you", 
+        "later.", "later",
+        "thank you.", "thank you",
         "thanks for watching.", "thanks for watching",
         "the end."
       ].includes(lowerText) || lowerText.includes("subtitles by") || lowerText.includes("amara.org");
@@ -444,33 +479,33 @@ function App() {
       // Handle Tool Calls if the AI decided to use the tracking tool
       if (responseMessage.tool_calls) {
         chatHistoryRef.current.push(responseMessage); // Add the assistant's tool call message
-        
+
         for (const toolCall of responseMessage.tool_calls) {
           if (toolCall.function.name === "track_vehicle") {
             setInterimText("Tracking vehicle...");
             const args = JSON.parse(toolCall.function.arguments);
             let vehicleNum = args.vehicle_number ? args.vehicle_number.replace(/\s+/g, '').toUpperCase() : "";
-            
+
             try {
               const locRes = await fetch('https://countrywidelogistics.in/api/v1/vehicle/gps/location');
               const locData = await locRes.json();
               let foundVehicle = null;
-              
+
               if (locData.success && locData.data && locData.data.gps_list) {
-                foundVehicle = locData.data.gps_list.find(v => 
-                  v.vehicle_number.toUpperCase() === vehicleNum || 
+                foundVehicle = locData.data.gps_list.find(v =>
+                  v.vehicle_number.toUpperCase() === vehicleNum ||
                   v.vehicle_number.toUpperCase().endsWith(vehicleNum)
                 );
               }
-              
+
               if (foundVehicle) {
                 // Dispatch event to make the map auto-focus on this vehicle
-                window.dispatchEvent(new CustomEvent('focus-vehicle', { 
-                  detail: { id: foundVehicle.vehicle_number } 
+                window.dispatchEvent(new CustomEvent('focus-vehicle', {
+                  detail: { id: foundVehicle.vehicle_number }
                 }));
               }
-              
-              const toolResult = foundVehicle 
+
+              const toolResult = foundVehicle
                 ? `Vehicle ${vehicleNum} is currently at: ${foundVehicle.address}. Last updated: ${foundVehicle.last_received_at}`
                 : `Could not find GPS data for vehicle ${vehicleNum}. Please verify the number.`;
 
@@ -517,10 +552,10 @@ function App() {
       }
 
       let assistantText = responseMessage.content || "";
-      
+
       // Safety filter: If the LLM still outputs raw tool call syntax in content, strip it or replace it
       if (assistantText.includes("function=track_vehicle")) {
-         assistantText = "वाहन की जानकारी मिल गई है।"; // Fallback text
+        assistantText = "वाहन की जानकारी मिल गई है।"; // Fallback text
       }
 
       chatHistoryRef.current.push({ role: "assistant", content: assistantText });
